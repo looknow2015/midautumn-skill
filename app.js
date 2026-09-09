@@ -23,7 +23,9 @@ const saveButton = document.querySelector('#saveButton');
 const copyButton = document.querySelector('#copyButton');
 const steps = document.querySelector('#steps');
 let currentTone = '';
+let appliedTone = '';
 let currentResult = null;
+let baseResult = null;
 let requestController = null;
 
 function showResult(result) {
@@ -44,7 +46,8 @@ async function requestModel(tone = '') {
     const response = await fetch(`${apiBase}/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: wish.value.trim(), tone, previous: currentResult }),
+      // 三种调整始终以第一次生成的准确版本为底稿，避免连续点击后语义逐步漂移。
+      body: JSON.stringify({ message: wish.value.trim(), tone, previous: tone ? baseResult : null }),
       signal: requestController.signal,
     });
     const data = await response.json().catch(() => ({}));
@@ -58,11 +61,18 @@ async function requestModel(tone = '') {
 async function generateWithFallback(tone = '') {
   try {
     const result = await requestModel(tone);
+    if (!tone) baseResult = { ...result };
     showResult(result);
     return 'model';
   } catch (error) {
-    console.warn('[midautumn] 使用本地备用文案：', error.message);
+    // 调整失败时不能用通用模板覆盖已经准确的初稿。
+    if (tone && currentResult) {
+      console.warn('[midautumn] 调整未完成，保留当前文案：', error.message);
+      return 'preserved';
+    }
+    console.warn('[midautumn] 首次生成使用本地备用文案：', error.message);
     showResult(window.MidAutumnCopy.generate(wish.value, tone));
+    if (!tone) baseResult = { ...currentResult };
     return 'fallback';
   }
 }
@@ -85,6 +95,9 @@ submitButton.addEventListener('click', async () => {
   gathering.classList.remove('hidden');
   cardCopy.classList.add('hidden');
   currentTone = '';
+  appliedTone = '';
+  currentResult = null;
+  baseResult = null;
   await generateWithFallback();
   gathering.classList.add('hidden');
   cardCopy.classList.remove('hidden');
@@ -129,8 +142,17 @@ document.querySelector('#toneRow').addEventListener('click', async (event) => {
   });
   const oldText = button.textContent;
   button.textContent = '正在调整…';
-  await generateWithFallback(currentTone);
-  button.textContent = oldText;
+  const resultSource = await generateWithFallback(currentTone);
+  if (resultSource === 'preserved') {
+    currentTone = appliedTone;
+    buttons.forEach((item) => item.classList.toggle('active', item.dataset.tone === appliedTone));
+  } else {
+    appliedTone = currentTone;
+  }
+  button.textContent = resultSource === 'preserved' ? '调整失败，请重试' : oldText;
+  if (resultSource === 'preserved') {
+    setTimeout(() => { button.textContent = oldText; }, 1800);
+  }
   buttons.forEach((item) => { item.disabled = false; });
 });
 
