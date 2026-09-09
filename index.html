@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="把没说出口的心意，说得刚刚好。" />
+    <title>中秋表达 Skill｜工银瑞信 AI时间合伙人</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="site-header">
+        <div class="brand-mark" aria-label="工银瑞信 AI时间合伙人">
+          <span class="brand-seal">工</span><span>工银瑞信 <i>AI时间合伙人</i></span>
+        </div>
+        <div class="festival-label"><span aria-hidden="true">☾</span> 中秋限定</div>
+      </header>
+
+      <section class="experience">
+        <div class="copy-panel">
+          <button class="back-button hidden" id="backButton" type="button"><span aria-hidden="true">←</span> 再写一句</button>
+          <div class="eyebrow" id="eyebrow">中秋表达 SKILL · 2026</div>
+          <div class="headline-block">
+            <span class="chapter">01</span>
+            <h1 id="headline">这个中秋，<br />有什么话不太容易说出口？</h1>
+            <p id="intro">写下对象、情境或一个记得的细节，一句话就够。</p>
+          </div>
+
+          <div class="input-area" id="inputArea">
+            <label for="wish">我想说</label>
+            <textarea id="wish" placeholder="比如：今年不能回家，帮我给爸妈说一句，不要太煽情。" maxlength="180"></textarea>
+            <div class="input-meta">
+              <button id="exampleButton" type="button"><span aria-hidden="true">↻</span> 换个示例</button>
+              <span id="counter">0/180</span>
+            </div>
+            <button class="primary-button" id="submitButton" type="button" disabled>AI 帮我表达 <span aria-hidden="true">›</span></button>
+            <p class="privacy-note">无需登录 · 不保存输入 · 约 30 秒完成</p>
+          </div>
+
+          <div class="result-controls hidden" id="resultControls">
+            <div>
+              <span class="control-label">再调整一下</span>
+              <div class="tone-row" id="toneRow">
+                <button type="button" data-tone="更短一点">更短一点</button>
+                <button type="button" data-tone="别太煽情">别太煽情</button>
+                <button type="button" data-tone="更像我说话">更像我说话</button>
+              </div>
+            </div>
+            <div class="share-copy">
+              <span class="control-label">分享配文</span>
+              <p id="shareText"></p>
+              <button id="copyButton" type="button"><span aria-hidden="true">▣</span> <span>复制全部文字</span></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-wrap" id="cardWrap">
+            <div class="moon-card" aria-label="中秋心意卡预览">
+              <img src="./midautumn-paper-moon.png" alt="纸艺满月与桂花构成的中秋月影" />
+              <div class="gathering-copy hidden" id="gathering" aria-live="polite">
+                <span class="sparkle" aria-hidden="true">✦</span><span>正在理解对象、关系与语气</span>
+                <div class="gather-lines"><i></i><i></i><i></i></div>
+              </div>
+              <div class="card-copy" id="cardCopy" aria-live="polite">
+                <span class="card-kicker">中秋 · 一句心意</span>
+                <h2 id="cardTitle">把没说出口的心意，<br />说得刚刚好。</h2>
+                <p id="cardBody">你的真实片段，会在这里变成一张克制、自然的中秋心意卡。</p>
+                <span class="card-signature">工银瑞信 AI时间合伙人｜中秋限定</span>
+              </div>
+            </div>
+            <button class="save-button hidden" id="saveButton" type="button"><span aria-hidden="true">⇩</span> 保存心意卡</button>
+          </div>
+          <div class="step-dots" id="steps" aria-label="当前步骤 1，共 2 步"><span class="active"></span><span></span><em>写一句</em></div>
+        </div>
+      </section>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>
