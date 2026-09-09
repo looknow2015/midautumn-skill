@@ -24,13 +24,47 @@ const copyButton = document.querySelector('#copyButton');
 const steps = document.querySelector('#steps');
 let currentTone = '';
 let currentResult = null;
+let requestController = null;
 
-function renderResult() {
-  currentResult = window.MidAutumnCopy.generate(wish.value, currentTone);
+function showResult(result) {
+  currentResult = result;
   cardTitle.textContent = currentResult.title;
   cardBody.textContent = currentResult.body;
   shareText.textContent = currentResult.share;
   cardCopy.classList.add('result-copy');
+}
+
+async function requestModel(tone = '') {
+  const apiBase = String(window.MID_AUTUMN_CONFIG?.apiUrl || '').replace(/\/$/, '');
+  if (!apiBase) throw new Error('尚未配置模型接口');
+  if (requestController) requestController.abort();
+  requestController = new AbortController();
+  const timeout = setTimeout(() => requestController.abort(), 22000);
+  try {
+    const response = await fetch(`${apiBase}/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: wish.value.trim(), tone, previous: currentResult }),
+      signal: requestController.signal,
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.card) throw new Error(data.error || '模型接口暂时不可用');
+    return data.card;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function generateWithFallback(tone = '') {
+  try {
+    const result = await requestModel(tone);
+    showResult(result);
+    return 'model';
+  } catch (error) {
+    console.warn('[midautumn] 使用本地备用文案：', error.message);
+    showResult(window.MidAutumnCopy.generate(wish.value, tone));
+    return 'fallback';
+  }
 }
 
 wish.addEventListener('input', () => {
@@ -44,28 +78,26 @@ exampleButton.addEventListener('click', () => {
   wish.focus();
 });
 
-submitButton.addEventListener('click', () => {
+submitButton.addEventListener('click', async () => {
   if (!wish.value.trim()) return;
   submitButton.disabled = true;
   submitButton.innerHTML = '<span class="spinner"></span> 正在整理心意…';
   gathering.classList.remove('hidden');
   cardCopy.classList.add('hidden');
-  setTimeout(() => {
-    currentTone = '';
-    renderResult();
-    gathering.classList.add('hidden');
-    cardCopy.classList.remove('hidden');
-    inputArea.classList.add('hidden');
-    eyebrow.classList.add('hidden');
-    resultControls.classList.remove('hidden');
-    backButton.classList.remove('hidden');
-    saveButton.classList.remove('hidden');
-    headline.textContent = '你的心意，已经写好了。';
-    intro.textContent = '保留你的真实细节，只把表达整理得更自然。';
-    steps.children[1].classList.add('active');
-    steps.querySelector('em').textContent = '心意卡';
-    steps.setAttribute('aria-label', '当前步骤 2，共 2 步');
-  }, 900);
+  currentTone = '';
+  await generateWithFallback();
+  gathering.classList.add('hidden');
+  cardCopy.classList.remove('hidden');
+  inputArea.classList.add('hidden');
+  eyebrow.classList.add('hidden');
+  resultControls.classList.remove('hidden');
+  backButton.classList.remove('hidden');
+  saveButton.classList.remove('hidden');
+  headline.textContent = '你的心意，已经写好了。';
+  intro.textContent = '保留你的真实细节，只把表达整理得更自然。';
+  steps.children[1].classList.add('active');
+  steps.querySelector('em').textContent = '心意卡';
+  steps.setAttribute('aria-label', '当前步骤 2，共 2 步');
 });
 
 backButton.addEventListener('click', () => {
@@ -86,12 +118,20 @@ backButton.addEventListener('click', () => {
   steps.setAttribute('aria-label', '当前步骤 1，共 2 步');
 });
 
-document.querySelector('#toneRow').addEventListener('click', (event) => {
+document.querySelector('#toneRow').addEventListener('click', async (event) => {
   const button = event.target.closest('button');
   if (!button) return;
   currentTone = button.dataset.tone;
-  document.querySelectorAll('#toneRow button').forEach((item) => item.classList.toggle('active', item === button));
-  renderResult();
+  const buttons = document.querySelectorAll('#toneRow button');
+  buttons.forEach((item) => {
+    item.classList.toggle('active', item === button);
+    item.disabled = true;
+  });
+  const oldText = button.textContent;
+  button.textContent = '正在调整…';
+  await generateWithFallback(currentTone);
+  button.textContent = oldText;
+  buttons.forEach((item) => { item.disabled = false; });
 });
 
 copyButton.addEventListener('click', async () => {
