@@ -25,36 +25,8 @@ const steps = document.querySelector('#steps');
 let currentTone = '';
 let currentResult = null;
 
-function cleanInput(value) {
-  return value.replace(/[“”"]|帮我|写成一句话|写一句|说一句|中秋问候|中秋祝福|。$/g, '').trim();
-}
-
-function generateCopy(input, tone = '') {
-  const normalized = input.trim();
-  const isParents = /爸妈|父母|爸爸|妈妈/.test(normalized);
-  const isFriend = /朋友|同学|很久没联系/.test(normalized);
-  const isClient = /客户|合作|同事|领导/.test(normalized);
-  const hasLotus = /桂花糖藕|糖藕/.test(normalized);
-  const cannotReturn = /不能回家|回不去|不回家/.test(normalized);
-  let result;
-
-  if (hasLotus) result = { title: '还是记得那口甜', body: '中秋一到，就会想起你做的桂花糖藕。很多细节已经记不清了，唯独那一点甜，还稳稳地留在记忆里。', share: '有些想念不用说满，一口熟悉的甜就够了。' };
-  else if (isParents && cannotReturn) result = { title: '月亮替我先回家', body: '今年中秋不能回家，想说的话也不用说得太满。你们好好吃饭，早点休息，等忙完这一阵，我再回去陪你们。', share: '不能一起过节，也没有忘记那盏家里的灯。' };
-  else if (isFriend) result = { title: '好久不见，也很想念', body: '我们有一阵子没联系了，但偶尔想起以前的事，还是会觉得很近。借这个中秋问候你一句：最近过得好吗？', share: '有些朋友不常联系，想起时仍然觉得亲近。' };
-  else if (isClient) result = { title: '一路同行，心意常在', body: '感谢一路以来的信任与同行。值此中秋，愿您与家人共度一段从容温暖的时光，所盼皆有回响。', share: '月满中秋，感谢同行。祝您和家人节日安康。' };
-  else {
-    const detail = cleanInput(normalized).slice(0, 42) || '这个中秋，我有一句话想对你说';
-    result = { title: '想说的话，留在月下', body: `${detail}。不必把心意说得很满，记得彼此、惦念彼此，就是这个中秋最踏实的团圆。`, share: '把没说出口的心意，借今晚的月亮轻轻说完。' };
-  }
-
-  if (tone === '更短一点') return { title: result.title.slice(0, 10), body: result.body.split(/[。！]/).filter(Boolean)[0] + '。', share: result.share.slice(0, 24) };
-  if (tone === '别太煽情') return { title: hasLotus ? '还记得那口甜' : isFriend ? '近来还好吗' : isClient ? '感谢同行' : '中秋，记得问候', body: result.body.replace(/想念|惦念/g, '记得').replace(/稳稳地|轻轻/g, ''), share: isClient ? '感谢同行，祝您中秋安康。' : '中秋到了，问候一句：近来都好吗？' };
-  if (tone === '更像我说话') return { title: isParents ? '中秋快乐，等我回家' : isFriend ? '嗨，好久不见' : isClient ? '中秋安康' : '有句话想跟你说', body: isParents ? '今年中秋我回不去，你们照顾好自己，好好吃饭。等我忙完这阵就回家，到时候再慢慢聊。' : isFriend ? '好久没联系了，刚好中秋，想起你就来问候一句。最近怎么样？有空我们再好好聊聊。' : result.body, share: isParents ? '今年不能回家，但一直记挂着家里。' : result.share };
-  return result;
-}
-
 function renderResult() {
-  currentResult = generateCopy(wish.value, currentTone);
+  currentResult = window.MidAutumnCopy.generate(wish.value, currentTone);
   cardTitle.textContent = currentResult.title;
   cardBody.textContent = currentResult.body;
   shareText.textContent = currentResult.share;
