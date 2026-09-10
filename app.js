@@ -190,43 +190,43 @@ saveButton.addEventListener('click', async () => {
   if (!ctx) return;
   ctx.drawImage(image, 0, 0, 1080, 2340);
 
-  const panelX = 72;
-  const panelY = 1770;
-  const panelWidth = 936;
-  const panelHeight = 470;
+  const panelX = 54;
+  const panelY = 1510;
+  const panelWidth = 972;
+  const panelHeight = 775;
   ctx.beginPath();
   ctx.roundRect(panelX, panelY, panelWidth, panelHeight, 22);
-  ctx.fillStyle = 'rgba(255, 252, 244, 0.97)';
+  ctx.fillStyle = '#fffaf0';
   ctx.fill();
   ctx.lineWidth = 2;
   ctx.strokeStyle = 'rgba(173, 119, 29, 0.72)';
   ctx.stroke();
 
   ctx.fillStyle = '#b51f24';
-  ctx.font = '700 24px "PingFang SC", sans-serif';
-  ctx.fillText('中秋限定 · 思念 SKILL', 132, 1845);
+  ctx.font = '700 30px "PingFang SC", sans-serif';
+  ctx.fillText('中秋限定 · 思念 SKILL', 122, 1605);
 
   ctx.fillStyle = '#352819';
-  ctx.font = '500 58px "Songti SC", "STSong", serif';
-  const titleLines = wrapCanvasText(ctx, currentResult.title, 810).slice(0, 2);
-  let cursorY = 1925;
+  ctx.font = '500 80px "Songti SC", "STSong", serif';
+  const titleLines = wrapCanvasText(ctx, currentResult.title, 836).slice(0, 2);
+  let cursorY = 1710;
   titleLines.forEach((line) => {
-    ctx.fillText(line, 132, cursorY);
-    cursorY += 72;
+    ctx.fillText(line, 122, cursorY);
+    cursorY += 96;
   });
 
   ctx.fillStyle = '#665746';
-  ctx.font = '400 28px "PingFang SC", sans-serif';
-  cursorY += 8;
-  wrapCanvasText(ctx, currentResult.body, 810).slice(0, 3).forEach((line) => {
-    ctx.fillText(line, 132, cursorY);
-    cursorY += 47;
+  ctx.font = '400 36px "PingFang SC", sans-serif';
+  cursorY += 15;
+  wrapCanvasText(ctx, currentResult.body, 836).slice(0, 4).forEach((line) => {
+    ctx.fillText(line, 122, cursorY);
+    cursorY += 58;
   });
 
   ctx.fillStyle = 'rgba(157, 107, 30, 0.35)';
-  ctx.fillRect(132, 2167, 810, 2);
+  ctx.fillRect(122, 2180, 836, 2);
   ctx.fillStyle = '#9e6c19';
-  ctx.font = '400 22px "PingFang SC", sans-serif';
-  ctx.fillText('工银瑞信 AI时间合伙人', 132, 2210);
+  ctx.font = '400 27px "PingFang SC", sans-serif';
+  ctx.fillText('工银瑞信 AI时间合伙人', 122, 2240);
   const link = document.createElement('a'); link.download = '我的中秋心意卡.png'; link.href = canvas.toDataURL('image/png'); link.click();
 });
