@@ -119,8 +119,8 @@ backButton.addEventListener('click', () => {
   resultControls.classList.add('hidden');
   backButton.classList.add('hidden');
   saveButton.classList.add('hidden');
-  headline.innerHTML = '这个中秋，<br>有什么话不太容易说出口？';
-  intro.textContent = '写下对象、情境或一个记得的细节，一句话就够。';
+  headline.innerHTML = '月亮升起时，<br>每一份想念都有了方向。';
+  intro.textContent = '写下你想对谁说、发生了什么，一句话就够。';
   submitButton.innerHTML = 'AI 帮我表达 <span aria-hidden="true">›</span>';
   submitButton.disabled = !wish.value.trim();
   cardTitle.innerHTML = '把没说出口的心意，<br>说得刚刚好。';
@@ -181,22 +181,52 @@ function wrapCanvasText(ctx, text, maxWidth) {
 saveButton.addEventListener('click', async () => {
   if (!currentResult) return;
   const image = new Image();
-  image.src = './midautumn-paper-moon.png';
+  image.src = './midautumn-ui-poster.jpg';
   await image.decode();
   const canvas = document.createElement('canvas');
-  canvas.width = 1080; canvas.height = 1440;
+  canvas.width = 1080;
+  canvas.height = 2340;
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
-  ctx.drawImage(image, 0, 0, 1080, 1920);
-  ctx.fillStyle = 'rgba(9,9,8,.18)'; ctx.fillRect(0, 0, 1080, 1440);
-  ctx.fillStyle = '#d8b67a'; ctx.font = '500 26px system-ui'; ctx.fillText('中秋表达 SKILL · 2026', 82, 98);
-  ctx.fillStyle = '#fffaf0'; ctx.font = '600 68px serif';
-  const titleLines = wrapCanvasText(ctx, currentResult.title, 690);
-  titleLines.forEach((line, index) => ctx.fillText(line, 82, 660 + index * 88));
-  const bodyY = 660 + titleLines.length * 88 + 54;
-  ctx.font = '400 32px system-ui'; ctx.fillStyle = 'rgba(255,250,240,.86)';
-  wrapCanvasText(ctx, currentResult.body, 760).forEach((line, index) => ctx.fillText(line, 82, bodyY + index * 55));
-  ctx.fillStyle = '#c6523d'; ctx.fillRect(82, 1260, 42, 4);
-  ctx.fillStyle = 'rgba(255,250,240,.65)'; ctx.font = '400 24px system-ui'; ctx.fillText('工银瑞信 AI时间合伙人｜中秋限定', 82, 1320);
+  ctx.drawImage(image, 0, 0, 1080, 2340);
+
+  const panelX = 72;
+  const panelY = 1770;
+  const panelWidth = 936;
+  const panelHeight = 470;
+  ctx.beginPath();
+  ctx.roundRect(panelX, panelY, panelWidth, panelHeight, 22);
+  ctx.fillStyle = 'rgba(255, 252, 244, 0.97)';
+  ctx.fill();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = 'rgba(173, 119, 29, 0.72)';
+  ctx.stroke();
+
+  ctx.fillStyle = '#b51f24';
+  ctx.font = '700 24px "PingFang SC", sans-serif';
+  ctx.fillText('中秋限定 · 思念 SKILL', 132, 1845);
+
+  ctx.fillStyle = '#352819';
+  ctx.font = '500 58px "Songti SC", "STSong", serif';
+  const titleLines = wrapCanvasText(ctx, currentResult.title, 810).slice(0, 2);
+  let cursorY = 1925;
+  titleLines.forEach((line) => {
+    ctx.fillText(line, 132, cursorY);
+    cursorY += 72;
+  });
+
+  ctx.fillStyle = '#665746';
+  ctx.font = '400 28px "PingFang SC", sans-serif';
+  cursorY += 8;
+  wrapCanvasText(ctx, currentResult.body, 810).slice(0, 3).forEach((line) => {
+    ctx.fillText(line, 132, cursorY);
+    cursorY += 47;
+  });
+
+  ctx.fillStyle = 'rgba(157, 107, 30, 0.35)';
+  ctx.fillRect(132, 2167, 810, 2);
+  ctx.fillStyle = '#9e6c19';
+  ctx.font = '400 22px "PingFang SC", sans-serif';
+  ctx.fillText('工银瑞信 AI时间合伙人', 132, 2210);
   const link = document.createElement('a'); link.download = '我的中秋心意卡.png'; link.href = canvas.toDataURL('image/png'); link.click();
 });
